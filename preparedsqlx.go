@@ -1,7 +1,10 @@
 // Package preparedSQL handles statements preparing
 package preparedsqlx
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/jmoiron/sqlx"
+	"fmt"
+)
 
 var queryRegistry = map[string]string{}
 
@@ -24,9 +27,9 @@ func New(db *sqlx.DB) (*Registry, error) {
 	return registry, nil
 }
 
-func (m *Registry) Prepare(db *sqlx.DB) (err error) {
+func (r *Registry) Prepare(db *sqlx.DB) (err error) {
 	for name, query := range queryRegistry {
-		m.storage[name], err = db.Preparex(query)
+		r.storage[name], err = db.Preparex(query)
 		if err != nil {
 			return err
 		}
@@ -34,6 +37,12 @@ func (m *Registry) Prepare(db *sqlx.DB) (err error) {
 	return nil
 }
 
-func (m *Registry) Get(query string) *sqlx.Stmt {
-	return m.storage[query]
+func (r *Registry) Get(query string) (*sqlx.Stmt, error) {
+	if r.storage[query] == nil {
+		if queryRegistry[query] == "" {
+			return nil, fmt.Errorf("prepared query '%s' is not added", query)
+		}
+		return nil, fmt.Errorf("query '%s' is not prepared", query)
+	}
+	return r.storage[query], nil
 }
