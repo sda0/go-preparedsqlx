@@ -56,7 +56,7 @@ func (r *Registry) Get(query string) (*sqlx.Stmt, error) {
 }
 
 // GetTx returns statement to be executed linked to provided transaction
-func (r *Registry) GetTx(tx sqlx.Tx, query string) (*sqlx.Stmt, error) {
+func (r *Registry) GetTx(tx *sqlx.Tx, query string) (*sqlx.Stmt, error) {
 	pg, err := r.Get(query)
 	if err != nil {
 		return nil, err
