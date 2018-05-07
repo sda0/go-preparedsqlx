@@ -4,6 +4,7 @@ package preparedsqlx
 import (
 	"github.com/jmoiron/sqlx"
 	"fmt"
+	"github.com/pkg/errors"
 )
 
 var queryRegistry = map[string]string{}
@@ -34,7 +35,7 @@ func (r *Registry) Prepare(db *sqlx.DB) (err error) {
 	for name, query := range queryRegistry {
 		r.storage[name], err = db.Preparex(query)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "cannot prepare query %q", name)
 		}
 	}
 	return nil
