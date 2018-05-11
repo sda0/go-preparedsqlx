@@ -67,7 +67,7 @@ func (s *SQLStorage) GetFilesTerms(ctx context.Context, files []string) ([]*stor
 }
 
 // RemoveFilesTerms uses transactions 
-func (s *SQLStorage) RemoveFilesTerms(ctx context.Context, vv []*storage.FileTerms) (error) {
+func (s *SQLStorage) RemoveFilesTerms(ctx context.Context, vv []int) (error) {
 	tx, err := s.connect.Beginx()
 	if err != nil {
 		return nil
@@ -77,8 +77,8 @@ func (s *SQLStorage) RemoveFilesTerms(ctx context.Context, vv []*storage.FileTer
 		tx.Rollback()
 		return nil
 	}
-	for _, ft := range vv {
-		r, err := deleteFilesTermsQuery.ExecContext(ctx, ft.FileKey, ft.Vocabulary, ft.Term)
+	for _, v := range vv {
+		r, err := deleteFilesTermsQuery.ExecContext(ctx, v)
 		if err != nil {
 			tx.Rollback()
 			return nil
